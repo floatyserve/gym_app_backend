@@ -3,6 +3,7 @@ package com.example.demo.card.service.impl;
 import com.example.demo.card.domain.AccessCard;
 import com.example.demo.card.domain.AccessCardStatus;
 import com.example.demo.card.repository.AccessCardRepository;
+import com.example.demo.card.repository.specification.AccessCardSpecification;
 import com.example.demo.card.service.AccessCardService;
 import com.example.demo.common.ResourceType;
 import com.example.demo.customer.domain.Customer;
@@ -53,8 +54,16 @@ public class AccessCardServiceJpa implements AccessCardService {
     }
 
     @Override
-    public Page<AccessCard> findAll(Pageable pageable) {
-        return accessCardRepository.findAll(pageable);
+    public Page<AccessCard> search(
+            String code,
+            AccessCardStatus status,
+            Long customerId,
+            Pageable pageable
+    ) {
+        return accessCardRepository.findAll(
+                AccessCardSpecification.build(code, status, customerId),
+                pageable
+        );
     }
 
     @Override

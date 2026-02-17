@@ -6,10 +6,13 @@ import com.example.demo.customer.domain.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface AccessCardRepository extends JpaRepository<AccessCard, Long> {
+public interface AccessCardRepository extends
+        JpaRepository<AccessCard, Long>,
+        JpaSpecificationExecutor<AccessCard> {
 
     Optional<AccessCard> findByCode(String code);
 

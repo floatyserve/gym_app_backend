@@ -1,6 +1,7 @@
 package com.example.demo.card.api.controller;
 
 import com.example.demo.card.api.dto.AccessCardResponseDto;
+import com.example.demo.card.api.dto.AccessCardSearchRequest;
 import com.example.demo.card.api.dto.CreateAccessCardRequest;
 import com.example.demo.card.mapper.AccessCardMapper;
 import com.example.demo.card.service.AccessCardService;
@@ -30,10 +31,17 @@ public class AccessCardController {
     }
 
     @GetMapping
-    public PageResponseDto<AccessCardResponseDto> getAll(Pageable pageable){
+    public PageResponseDto<AccessCardResponseDto> search(
+            @ModelAttribute AccessCardSearchRequest request,
+            Pageable pageable
+    ) {
         return PageResponseDto.from(
-                accessCardService.findAll(pageable)
-                        .map(mapper::toDto)
+                accessCardService.search(
+                        request.code(),
+                        request.status(),
+                        request.customerId(),
+                        pageable
+                ).map(mapper::toDto)
         );
     }
 
