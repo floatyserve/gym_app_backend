@@ -4,17 +4,19 @@ import com.example.demo.common.ResourceType;
 import com.example.demo.exceptions.AlreadyExistsException;
 import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.exceptions.ReferenceNotFoundException;
-import com.example.demo.locker.api.dto.LockerResponseDto;
 import com.example.demo.locker.domain.Locker;
 import com.example.demo.locker.domain.LockerStats;
 import com.example.demo.locker.domain.LockerStatus;
 import com.example.demo.locker.repository.LockerAssignmentRepository;
 import com.example.demo.locker.repository.LockerRepository;
+import com.example.demo.locker.repository.specification.LockerSpecification;
 import com.example.demo.locker.service.LockerService;
+import com.example.demo.locker.service.model.LockerSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,14 @@ public class LockerServiceJpa implements LockerService {
     private final LockerAssignmentRepository lockerAssignmentRepository;
 
     @Override
-    public Page<Locker> findAll(Pageable pageable) {
-        return lockerRepository.findAll(pageable);
+    public Page<Locker> search(LockerSearchCriteria criteria, Pageable pageable) {
+        Specification<Locker> specification = LockerSpecification.build(
+                criteria.number(),
+                criteria.status(),
+                criteria.occupied()
+        );
+
+        return lockerRepository.findAll(specification,pageable);
     }
 
     @Override
@@ -50,8 +58,11 @@ public class LockerServiceJpa implements LockerService {
 
     @Override
     public Locker findFirstAvailable() {
+        Specification<Locker> spec = LockerSpecification.build(null, LockerStatus.AVAILABLE, false);
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
         return lockerRepository
-                .findAvailableLockers(PageRequest.of(0, 1))
+                .findAll(spec, pageRequest)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ReferenceNotFoundException(
@@ -100,16 +111,6 @@ public class LockerServiceJpa implements LockerService {
 
         locker.markOutOfOrder();
         return locker;
-    }
-
-    @Override
-    public Page<LockerResponseDto> findAllWithOccupancy(Pageable pageable) {
-        return lockerRepository.findAllWithOccupancy(pageable);
-    }
-
-    @Override
-    public Page<LockerResponseDto> findAvailableLockersWithOccupancy(Pageable pageable) {
-        return lockerRepository.findAvailableLockersWithOccupancy(pageable);
     }
 
     @Override

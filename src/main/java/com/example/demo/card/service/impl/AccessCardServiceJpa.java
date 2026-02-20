@@ -5,6 +5,7 @@ import com.example.demo.card.domain.AccessCardStatus;
 import com.example.demo.card.repository.AccessCardRepository;
 import com.example.demo.card.repository.specification.AccessCardSpecification;
 import com.example.demo.card.service.AccessCardService;
+import com.example.demo.card.service.model.AccessCardSearchCriteria;
 import com.example.demo.common.ResourceType;
 import com.example.demo.customer.domain.Customer;
 import com.example.demo.exceptions.AlreadyExistsException;
@@ -12,6 +13,7 @@ import com.example.demo.exceptions.ReferenceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,16 +56,15 @@ public class AccessCardServiceJpa implements AccessCardService {
     }
 
     @Override
-    public Page<AccessCard> search(
-            String code,
-            AccessCardStatus status,
-            Long customerId,
-            Pageable pageable
-    ) {
-        return accessCardRepository.findAll(
-                AccessCardSpecification.build(code, status, customerId),
-                pageable
-        );
+    public Page<AccessCard> search(AccessCardSearchCriteria criteria, Pageable pageable) {
+        Specification<AccessCard> specification =
+                AccessCardSpecification.build(
+                        criteria.code(),
+                        criteria.status(),
+                        criteria.customerId()
+                );
+
+        return accessCardRepository.findAll(specification, pageable);
     }
 
     @Override

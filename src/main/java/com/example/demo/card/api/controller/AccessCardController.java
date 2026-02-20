@@ -5,6 +5,7 @@ import com.example.demo.card.api.dto.AccessCardSearchRequest;
 import com.example.demo.card.api.dto.CreateAccessCardRequest;
 import com.example.demo.card.mapper.AccessCardMapper;
 import com.example.demo.card.service.AccessCardService;
+import com.example.demo.card.service.model.AccessCardSearchCriteria;
 import com.example.demo.common.api.dto.PageResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +36,14 @@ public class AccessCardController {
             @ModelAttribute AccessCardSearchRequest request,
             Pageable pageable
     ) {
+        AccessCardSearchCriteria criteria = new AccessCardSearchCriteria(
+                request.code(),
+                request.status(),
+                request.customerId()
+        );
+
         return PageResponseDto.from(
-                accessCardService.search(
-                        request.code(),
-                        request.status(),
-                        request.customerId(),
-                        pageable
+                accessCardService.search(criteria, pageable
                 ).map(mapper::toDto)
         );
     }

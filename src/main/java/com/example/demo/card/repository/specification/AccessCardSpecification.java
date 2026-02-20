@@ -2,36 +2,47 @@ package com.example.demo.card.repository.specification;
 
 import com.example.demo.card.domain.AccessCard;
 import com.example.demo.card.domain.AccessCardStatus;
+import com.example.demo.common.specification.BaseSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
-import java.util.List;
+public final class AccessCardSpecification extends BaseSpecification {
 
-public class AccessCardSpecification {
+    private AccessCardSpecification() {}
+
     public static Specification<AccessCard> build(
             String code,
             AccessCardStatus status,
             Long customerId
-    ){
-        List<Specification<AccessCard>> specs = new ArrayList<>();
+    ) {
+        Specification<AccessCard> spec = alwaysTrue();
 
         if (code != null && !code.isBlank()) {
-            specs.add((root, _, cb) ->
-                    cb.equal(root.get("code"), code));
+            spec = spec.and(hasCode(code));
         }
 
         if (status != null) {
-            specs.add((root, _, cb) ->
-                    cb.equal(root.get("status"), status));
+            spec = spec.and(hasStatus(status));
         }
 
         if (customerId != null) {
-            specs.add((root, _, cb) ->
-                    cb.equal(root.get("customer").get("id"), customerId));
+            spec = spec.and(hasCustomerId(customerId));
         }
 
-        return specs.stream()
-                .reduce(Specification::and)
-                .orElse((_, _, cb) -> cb.conjunction());
+        return spec;
+    }
+
+    public static Specification<AccessCard> hasCode(String code) {
+        return (root, _, cb) ->
+                cb.equal(root.get("code"), code);
+    }
+
+    public static Specification<AccessCard> hasStatus(AccessCardStatus status) {
+        return (root, _, cb) ->
+                cb.equal(root.get("status"), status);
+    }
+
+    public static Specification<AccessCard> hasCustomerId(Long customerId) {
+        return (root, _, cb) ->
+                cb.equal(root.get("customer").get("id"), customerId);
     }
 }
