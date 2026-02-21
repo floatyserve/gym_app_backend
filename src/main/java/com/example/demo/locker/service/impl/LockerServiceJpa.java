@@ -7,9 +7,9 @@ import com.example.demo.exceptions.ReferenceNotFoundException;
 import com.example.demo.locker.domain.Locker;
 import com.example.demo.locker.domain.LockerStats;
 import com.example.demo.locker.domain.LockerStatus;
-import com.example.demo.locker.repository.LockerAssignmentRepository;
 import com.example.demo.locker.repository.LockerRepository;
 import com.example.demo.locker.repository.specification.LockerSpecification;
+import com.example.demo.locker.service.LockerAssignmentService;
 import com.example.demo.locker.service.LockerService;
 import com.example.demo.locker.service.model.LockerSearchCriteria;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LockerServiceJpa implements LockerService {
     private final LockerRepository lockerRepository;
-    private final LockerAssignmentRepository lockerAssignmentRepository;
+    private final LockerAssignmentService lockerAssignmentService;
 
     @Override
     public Page<Locker> search(LockerSearchCriteria criteria, Pageable pageable) {
@@ -96,7 +96,7 @@ public class LockerServiceJpa implements LockerService {
             );
         }
 
-        if (lockerAssignmentRepository.existsByLockerIdAndReleasedAtIsNull(locker.getId())) {
+        if (lockerAssignmentService.isLockerOccupied(locker.getId())) {
             throw new BadRequestException(
                     ResourceType.LOCKER,
                     null,
