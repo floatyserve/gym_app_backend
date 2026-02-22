@@ -25,6 +25,16 @@ public class Locker {
     }
 
     public void markOutOfOrder() {
+        if (this.status == LockerStatus.OUT_OF_ORDER) {
+            throw new IllegalStateException("Locker already out of order");
+        }
         this.status = LockerStatus.OUT_OF_ORDER;
+    }
+
+    public void markAvailable() {
+        if (this.status != LockerStatus.OUT_OF_ORDER) {
+            throw new IllegalStateException("Only out of order lockers can be restored");
+        }
+        this.status = LockerStatus.AVAILABLE;
     }
 }

@@ -60,15 +60,23 @@ public class LockerController {
         return mapper.toDto(locker, lockerAssignmentService.isLockerOccupied(locker.getId()));
     }
 
-    @PostMapping(value = "/{lockerId}/make-unavailable")
-    public LockerResponseDto makeUnavailable(@PathVariable Long lockerId) {
+    @PostMapping(value = "/{lockerId}/out-of-order")
+    public LockerResponseDto markOutOfOrder(@PathVariable Long lockerId) {
         Locker locker = lockerService.findById(lockerId);
 
-        Locker updatedLocker = lockerService.makeUnavailable(locker);
+        Locker updatedLocker = lockerService.outOfOrder(locker);
 
         return mapper.toDto(updatedLocker, lockerAssignmentService.isLockerOccupied(lockerId));
 
     }
 
+    @PostMapping(value = "/{lockerId}/restore")
+    public LockerResponseDto makeAvailable(@PathVariable Long lockerId) {
+        Locker locker = lockerService.findById(lockerId);
+
+        Locker updatedLocker = lockerService.restore(locker);
+
+        return mapper.toDto(updatedLocker, lockerAssignmentService.isLockerOccupied(lockerId));
+    }
 
 }

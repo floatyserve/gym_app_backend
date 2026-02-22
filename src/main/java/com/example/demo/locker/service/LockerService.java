@@ -19,7 +19,9 @@ public interface LockerService {
 
     void assertAvailable(Locker locker);
 
-    Locker makeUnavailable(Locker locker);
+    Locker outOfOrder(Locker locker);
+
+    Locker restore(Locker locker);
 
     LockerStats getLockerStats();
 }

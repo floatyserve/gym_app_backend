@@ -7,9 +7,9 @@ import com.example.demo.exceptions.ReferenceNotFoundException;
 import com.example.demo.locker.domain.Locker;
 import com.example.demo.locker.domain.LockerStats;
 import com.example.demo.locker.domain.LockerStatus;
+import com.example.demo.locker.repository.LockerAssignmentRepository;
 import com.example.demo.locker.repository.LockerRepository;
 import com.example.demo.locker.repository.specification.LockerSpecification;
-import com.example.demo.locker.service.LockerAssignmentService;
 import com.example.demo.locker.service.LockerService;
 import com.example.demo.locker.service.model.LockerSearchCriteria;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LockerServiceJpa implements LockerService {
     private final LockerRepository lockerRepository;
-    private final LockerAssignmentService lockerAssignmentService;
+    private final LockerAssignmentRepository lockerAssignmentRepository;
 
     @Override
     public Page<Locker> search(LockerSearchCriteria criteria, Pageable pageable) {
@@ -35,7 +35,7 @@ public class LockerServiceJpa implements LockerService {
                 criteria.occupied()
         );
 
-        return lockerRepository.findAll(specification,pageable);
+        return lockerRepository.findAll(specification, pageable);
     }
 
     @Override
@@ -92,25 +92,33 @@ public class LockerServiceJpa implements LockerService {
             throw new BadRequestException(
                     ResourceType.LOCKER,
                     "status",
-                    "Locker is out of order."
+                    "Locker is not available."
             );
         }
 
-        if (lockerAssignmentService.isLockerOccupied(locker.getId())) {
-            throw new BadRequestException(
-                    ResourceType.LOCKER,
-                    null,
-                    "Locker is currently occupied"
-            );
-        }
+        assertNotOccupied(locker);
     }
 
     @Override
-    public Locker makeUnavailable(Locker locker) {
-        assertAvailable(locker);
+    public Locker outOfOrder(Locker locker) {
+        Locker managedLocker = findById(locker.getId());
 
-        locker.markOutOfOrder();
-        return locker;
+        assertAvailable(managedLocker);
+
+        managedLocker.markOutOfOrder();
+
+        return managedLocker;
+    }
+
+    @Override
+    public Locker restore(Locker locker) {
+        Locker managedLocker = findById(locker.getId());
+
+        assertNotOccupied(managedLocker);
+
+        managedLocker.markAvailable();
+
+        return managedLocker;
     }
 
     @Override
@@ -121,5 +129,15 @@ public class LockerServiceJpa implements LockerService {
         long outOfOrderCount = lockerRepository.countUnavailableLockers();
 
         return new LockerStats(totalCount, availableCount, occupiedCount, outOfOrderCount);
+    }
+
+    private void assertNotOccupied(Locker locker) {
+        if (lockerAssignmentRepository.existsByLockerIdAndReleasedAtIsNull(locker.getId())) {
+            throw new BadRequestException(
+                    ResourceType.LOCKER,
+                    null,
+                    "Locker is currently occupied"
+            );
+        }
     }
 }
