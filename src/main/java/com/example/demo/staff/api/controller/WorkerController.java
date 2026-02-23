@@ -3,7 +3,8 @@ package com.example.demo.staff.api.controller;
 import com.example.demo.common.api.dto.PageResponseDto;
 import com.example.demo.security.UserPrincipal;
 import com.example.demo.staff.api.dto.CreateWorkerOnboardingRequestDto;
-import com.example.demo.staff.api.dto.WorkerResponseDto;
+import com.example.demo.staff.api.dto.DetailedWorkerResponseDto;
+import com.example.demo.staff.api.dto.SimpleWorkerResponseDto;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.staff.mapper.WorkerMapper;
 import com.example.demo.staff.service.WorkerOnboardService;
@@ -28,28 +29,28 @@ public class WorkerController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     @GetMapping()
-    public PageResponseDto<WorkerResponseDto> getAll(Pageable pageable){
+    public PageResponseDto<SimpleWorkerResponseDto> getAll(Pageable pageable){
         return PageResponseDto.from(
                 workerService.findAll(pageable)
-                    .map(workerMapper::toDto)
+                    .map(workerMapper::toSimpleDto)
         );
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     @GetMapping("/{id}")
-    public WorkerResponseDto getById(@PathVariable Long id){
-        return workerMapper.toDto(workerService.findById(id));
+    public SimpleWorkerResponseDto getById(@PathVariable Long id){
+        return workerMapper.toSimpleDto(workerService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     @GetMapping("/by-user-id/{userId}")
-    public WorkerResponseDto getByUserId(@PathVariable Long userId){
-        return workerMapper.toDto(workerService.findByUserId(userId));
+    public SimpleWorkerResponseDto getByUserId(@PathVariable Long userId){
+        return workerMapper.toSimpleDto(workerService.findByUserId(userId));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public WorkerResponseDto createWorker(
+    public SimpleWorkerResponseDto createWorker(
             @Valid @RequestBody CreateWorkerOnboardingRequestDto req
     ) {
         Worker worker = workerOnboardingService.onboard(
@@ -63,16 +64,16 @@ public class WorkerController {
                 clock.instant()
         );
 
-        return workerMapper.toDto(worker);
+        return workerMapper.toSimpleDto(worker);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     @GetMapping("/me")
-    public WorkerResponseDto me(
+    public DetailedWorkerResponseDto me(
             @AuthenticationPrincipal UserPrincipal principal
     ) {
         Worker worker = workerService.findByUserId(principal.getId());
-        return workerMapper.toDto(worker);
+        return workerMapper.toDetailedDto(worker);
     }
 
 }
