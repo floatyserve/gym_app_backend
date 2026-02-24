@@ -59,7 +59,8 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(
                         "VALIDATION_ERROR",
-                        "Validation failed",
+                        "Validation failed for the following fields: "
+                                + String.join(", ", fieldErrors.keySet()),
                         Map.of("fields", fieldErrors)
                 ));
     }
