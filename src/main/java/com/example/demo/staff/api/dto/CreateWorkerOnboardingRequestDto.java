@@ -1,6 +1,7 @@
 package com.example.demo.staff.api.dto;
 
 import com.example.demo.auth.domain.Role;
+import com.example.demo.common.annotation.PhoneNumber;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ public record CreateWorkerOnboardingRequestDto(
         String lastName,
 
         @NotBlank
-        @Pattern(regexp = "^\\+?[0-9]{10,15}$")
+        @PhoneNumber
         String phoneNumber,
 
         @Past @NotNull
