@@ -84,4 +84,13 @@ public class UserServiceJpa implements UserService {
         User user = findById(targetUserId);
         user.activate();
     }
+
+    @Override
+    public void assertEmailAvailable(String email, Long currentUserId) {
+        userRepository.findByEmail(email)
+                .filter(u -> !u.getId().equals(currentUserId))
+                .ifPresent(_ -> {
+                    throw new AlreadyExistsException(ResourceType.USER, "email");
+                });
+    }
 }

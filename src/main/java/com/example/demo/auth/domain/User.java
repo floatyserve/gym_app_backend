@@ -49,6 +49,11 @@ public class User {
         this.passwordChanged = false;
     }
 
+    public void updateAccount(String email, Role role) {
+        this.email = email;
+        this.role = role;
+    }
+
     public void deactivate() {
         this.active = false;
     }

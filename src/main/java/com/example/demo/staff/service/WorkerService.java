@@ -1,5 +1,6 @@
 package com.example.demo.staff.service;
 
+import com.example.demo.staff.command.UpdateWorkerCommand;
 import com.example.demo.staff.domain.Worker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,5 @@ public interface WorkerService {
             LocalDate birthDate,
             Long userId
     );
+    Worker update(Long id, UpdateWorkerCommand command);
 }

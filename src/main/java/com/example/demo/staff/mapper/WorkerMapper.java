@@ -1,5 +1,6 @@
 package com.example.demo.staff.mapper;
 
+import com.example.demo.common.mapper.DateTimeMapper;
 import com.example.demo.staff.api.dto.DetailedWorkerResponseDto;
 import com.example.demo.staff.api.dto.SimpleWorkerResponseDto;
 import com.example.demo.staff.domain.Worker;
@@ -9,7 +10,8 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        uses = DateTimeMapper.class
 )
 public interface WorkerMapper {
     @Mapping(target = "fullName", source = "fullName")

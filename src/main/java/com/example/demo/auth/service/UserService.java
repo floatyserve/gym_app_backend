@@ -16,4 +16,6 @@ public interface UserService {
     void deactivate(Long currentUserId, Long targetUserId);
 
     void activate(Long currentUserId, Long targetUserId);
+
+    void assertEmailAvailable(String email, Long currentUserId);
 }

@@ -58,4 +58,16 @@ public class Worker {
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
+    public void updatePersonalInfo(
+            String firstName,
+            String lastName,
+            String phoneNumber,
+            LocalDate birthDate
+    ) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+    }
 }

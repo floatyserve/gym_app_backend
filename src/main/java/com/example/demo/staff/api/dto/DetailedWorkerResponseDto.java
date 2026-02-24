@@ -1,6 +1,5 @@
 package com.example.demo.staff.api.dto;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 public record DetailedWorkerResponseDto(
@@ -12,7 +11,7 @@ public record DetailedWorkerResponseDto(
         String lastName,
         String phoneNumber,
         LocalDate birthDate,
-        Instant hiredAt,
+        LocalDate hiredAt,
         Long userId
 ) {
 }

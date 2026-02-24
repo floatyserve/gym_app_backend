@@ -4,6 +4,7 @@ import com.example.demo.auth.domain.User;
 import com.example.demo.auth.service.UserService;
 import com.example.demo.common.ResourceType;
 import com.example.demo.exceptions.ReferenceNotFoundException;
+import com.example.demo.staff.command.UpdateWorkerCommand;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.staff.repository.WorkerRepository;
 import com.example.demo.staff.service.WorkerService;
@@ -68,8 +69,32 @@ public class WorkerServiceJpa implements WorkerService {
                 birthDate,
                 Instant.now(),
                 assignedUser
-                );
+        );
 
         return workerRepository.save(newWorker);
+    }
+
+    @Override
+    public Worker update(Long id, UpdateWorkerCommand command) {
+        Worker worker = findById(id);
+        User user = worker.getUser();
+
+        if (!user.getEmail().equals(command.email())) {
+            userService.assertEmailAvailable(command.email(), user.getId());
+        }
+
+        worker.updatePersonalInfo(
+                command.firstName(),
+                command.lastName(),
+                command.phoneNumber(),
+                command.birthDate()
+        );
+
+        user.updateAccount(
+                command.email(),
+                command.role()
+        );
+
+        return worker;
     }
 }

@@ -5,6 +5,8 @@ import com.example.demo.security.UserPrincipal;
 import com.example.demo.staff.api.dto.CreateWorkerOnboardingRequestDto;
 import com.example.demo.staff.api.dto.DetailedWorkerResponseDto;
 import com.example.demo.staff.api.dto.SimpleWorkerResponseDto;
+import com.example.demo.staff.api.dto.UpdateWorkerRequest;
+import com.example.demo.staff.command.UpdateWorkerCommand;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.staff.mapper.WorkerMapper;
 import com.example.demo.staff.service.WorkerOnboardService;
@@ -38,8 +40,8 @@ public class WorkerController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
     @GetMapping("/{id}")
-    public SimpleWorkerResponseDto getById(@PathVariable Long id){
-        return workerMapper.toSimpleDto(workerService.findById(id));
+    public DetailedWorkerResponseDto getById(@PathVariable Long id){
+        return workerMapper.toDetailedDto(workerService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
@@ -65,6 +67,26 @@ public class WorkerController {
         );
 
         return workerMapper.toSimpleDto(worker);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public DetailedWorkerResponseDto updateWorker(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateWorkerRequest req
+    ) {
+        UpdateWorkerCommand updateWorkerCommand = new UpdateWorkerCommand(
+                req.email(),
+                req.role(),
+                req.firstName(),
+                req.lastName(),
+                req.phoneNumber(),
+                req.birthDate()
+        );
+
+        Worker updatedWorker = workerService.update(id, updateWorkerCommand);
+
+        return workerMapper.toDetailedDto(updatedWorker);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
