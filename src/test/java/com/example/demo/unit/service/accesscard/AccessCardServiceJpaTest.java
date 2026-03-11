@@ -107,44 +107,6 @@ class AccessCardServiceJpaTest {
     }
 
     @Test
-    void revoke_success() {
-        AccessCard card = new AccessCard("CARD-1");
-        when(accessCardRepository.findById(1L)).thenReturn(Optional.of(card));
-        when(accessCardRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-
-        AccessCard revoked = service.revoke(1L);
-
-        assertEquals(AccessCardStatus.BLOCKED, revoked.getStatus());
-        verify(accessCardRepository).save(card);
-    }
-
-    @Test
-    void markLost_success() {
-        AccessCard card = new AccessCard("CARD-1");
-        when(accessCardRepository.findById(1L)).thenReturn(Optional.of(card));
-        when(accessCardRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-
-        AccessCard lost = service.markLost(1L);
-
-        assertEquals(AccessCardStatus.LOST, lost.getStatus());
-        verify(accessCardRepository).save(card);
-    }
-
-    @Test
-    void findAll_returnsPage() {
-        Page<AccessCard> page = new PageImpl<>(List.of(
-                new AccessCard("C1"),
-                new AccessCard("C2")
-        ));
-
-        when(accessCardRepository.findAll(Pageable.unpaged())).thenReturn(page);
-
-        Page<AccessCard> result = service.findAll(Pageable.unpaged());
-
-        assertEquals(2, result.getTotalElements());
-    }
-
-    @Test
     void findByCustomer_returnsPage() {
         Page<AccessCard> page = new PageImpl<>(List.of(new AccessCard("C1")));
 

@@ -2,6 +2,7 @@ package com.example.demo.card.repository.specification;
 
 import com.example.demo.card.domain.AccessCard;
 import com.example.demo.card.domain.AccessCardStatus;
+import com.example.demo.card.service.model.AccessCardSearchCriteria;
 import com.example.demo.common.specification.BaseSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -10,10 +11,12 @@ public final class AccessCardSpecification extends BaseSpecification {
     private AccessCardSpecification() {}
 
     public static Specification<AccessCard> build(
-            String code,
-            AccessCardStatus status,
-            Long customerId
+            AccessCardSearchCriteria criteria
     ) {
+        String code = criteria.code();
+        AccessCardStatus status = criteria.status();
+        Long customerId = criteria.customerId();
+
         Specification<AccessCard> spec = alwaysTrue();
 
         if (code != null && !code.isBlank()) {

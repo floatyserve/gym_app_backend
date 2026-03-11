@@ -88,6 +88,8 @@ public class AccessCard {
             throw new IllegalStateException("Only active cards with assigned customer can be detached");
         }
 
+        customer.getAccessCards().remove(this);
+
         this.customer = null;
     }
 

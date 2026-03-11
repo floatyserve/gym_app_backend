@@ -57,12 +57,7 @@ public class AccessCardServiceJpa implements AccessCardService {
 
     @Override
     public Page<AccessCard> search(AccessCardSearchCriteria criteria, Pageable pageable) {
-        Specification<AccessCard> specification =
-                AccessCardSpecification.build(
-                        criteria.code(),
-                        criteria.status(),
-                        criteria.customerId()
-                );
+        Specification<AccessCard> specification = AccessCardSpecification.build(criteria);
 
         return accessCardRepository.findAll(specification, pageable);
     }
