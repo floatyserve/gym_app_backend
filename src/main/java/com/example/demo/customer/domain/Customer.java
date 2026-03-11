@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -74,13 +75,16 @@ public class Customer {
         this.updatedBy = updatedBy;
     }
 
-    public AccessCard getActiveCard() {
+    public Optional<AccessCard> getActiveCard() {
         return accessCards.stream()
                 .filter(AccessCard::isActive)
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalStateException("Customer has no active access card")
-                );
+                .findFirst();
+    }
+
+    public String getActiveCardCode() {
+        return getActiveCard()
+                .map(AccessCard::getCode)
+                .orElse(null);
     }
 }
 

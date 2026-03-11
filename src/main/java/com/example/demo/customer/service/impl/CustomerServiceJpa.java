@@ -2,7 +2,9 @@ package com.example.demo.customer.service.impl;
 
 import com.example.demo.auth.domain.User;
 import com.example.demo.common.ResourceType;
+import com.example.demo.customer.api.dto.CustomerResponseDto;
 import com.example.demo.customer.domain.Customer;
+import com.example.demo.customer.service.model.CustomerSearchCriteria;
 import com.example.demo.customer.repository.CustomerRepository;
 import com.example.demo.customer.service.CustomerService;
 import com.example.demo.exceptions.AlreadyExistsException;
@@ -34,8 +36,17 @@ public class CustomerServiceJpa implements CustomerService {
     }
 
     @Override
-    public Page<Customer> findAll(Pageable pageable) {
-        return customerRepository.findAll(pageable);
+    public Page<CustomerResponseDto> search(
+            CustomerSearchCriteria criteria,
+            Pageable pageable
+    ) {
+        return customerRepository.search(
+                criteria.fullName(),
+                criteria.email(),
+                criteria.phoneNumber(),
+                criteria.cardCode(),
+                pageable
+        );
     }
 
     @Override

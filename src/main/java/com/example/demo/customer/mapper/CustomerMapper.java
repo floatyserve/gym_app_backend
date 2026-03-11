@@ -11,6 +11,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.ERROR
 )
 public interface CustomerMapper {
-    @Mapping(target = "cardCode", expression = "java(customer.getActiveCard().getCode())")
+    @Mapping(target = "cardCode", source = "activeCardCode")
     CustomerResponseDto toDto(Customer customer);
 }

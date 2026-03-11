@@ -11,12 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -69,21 +65,6 @@ class CustomerServiceJpaTest {
         verify(customerRepository).save(any(Customer.class));
     }
 
-    // ---------- findAll ----------
-
-    @Test
-    void findAll_returnsPagedCustomers() {
-        PageRequest pageable = PageRequest.of(0, 10);
-        Page<Customer> page = new PageImpl<>(List.of(customer), pageable, 1);
-
-        when(customerRepository.findAll(pageable)).thenReturn(page);
-
-        Page<Customer> result = customerService.findAll(pageable);
-
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().getFirst()).isSameAs(customer);
-    }
 
     // ---------- findById ----------
 

@@ -5,8 +5,10 @@ import com.example.demo.auth.service.UserService;
 import com.example.demo.common.api.dto.PageResponseDto;
 import com.example.demo.customer.api.dto.CreateCustomerRequest;
 import com.example.demo.customer.api.dto.CustomerResponseDto;
+import com.example.demo.customer.api.dto.CustomerSearchRequest;
 import com.example.demo.customer.api.dto.UpdateCustomerRequest;
 import com.example.demo.customer.domain.Customer;
+import com.example.demo.customer.service.model.CustomerSearchCriteria;
 import com.example.demo.customer.mapper.CustomerMapper;
 import com.example.demo.customer.service.CustomerService;
 import com.example.demo.customer.service.RegistrationService;
@@ -29,20 +31,29 @@ public class CustomerController {
     private final RegistrationService registrationService;
 
     @GetMapping
-    public PageResponseDto<CustomerResponseDto> getAll(Pageable pageable){
+    public PageResponseDto<CustomerResponseDto> search(
+            @ModelAttribute CustomerSearchRequest request,
+            Pageable pageable
+    ) {
+        CustomerSearchCriteria criteria = new CustomerSearchCriteria(
+                request.fullName(),
+                request.email(),
+                request.phoneNumber(),
+                request.cardCode()
+        );
+
         return PageResponseDto.from(
-                customerService.findAll(pageable)
-                    .map(customerMapper::toDto)
+                customerService.search(criteria, pageable)
         );
     }
 
     @GetMapping("/{id}")
-    public CustomerResponseDto getById(@PathVariable Long id){
+    public CustomerResponseDto getById(@PathVariable Long id) {
         return customerMapper.toDto(customerService.findById(id));
     }
 
     @GetMapping("/by-email")
-    public CustomerResponseDto getByEmail(@RequestParam String email){
+    public CustomerResponseDto getByEmail(@RequestParam String email) {
         return customerMapper.toDto(customerService.findByEmail(email));
     }
 
@@ -50,7 +61,7 @@ public class CustomerController {
     public CustomerResponseDto registerNewCustomer(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid CreateCustomerRequest request
-    ){
+    ) {
         User createdBy = userService.findById(userPrincipal.getId());
 
         Customer customer = registrationService.registerCustomerWithCard(
@@ -69,7 +80,7 @@ public class CustomerController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long id,
             @RequestBody UpdateCustomerRequest request
-    ){
+    ) {
         User updatedBy = userService.findById(userPrincipal.getId());
 
         Customer updatedCustomer = customerService.update(
