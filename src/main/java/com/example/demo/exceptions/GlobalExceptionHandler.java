@@ -34,11 +34,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleBadCredentials(
             BadCredentialsException ex
     ) {
+        String message = ex.getMessage();
+
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiError(
                         "BAD_CREDENTIALS",
-                        "Invalid email or password",
+                        message,
                         null
                 ));
     }
