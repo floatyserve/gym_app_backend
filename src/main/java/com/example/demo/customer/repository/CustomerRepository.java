@@ -2,14 +2,21 @@ package com.example.demo.customer.repository;
 
 import com.example.demo.customer.api.dto.CustomerResponseDto;
 import com.example.demo.customer.domain.Customer;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+    @EntityGraph(attributePaths = {"accessCards"})
+    @NonNull
+    @Override
+    Optional<Customer> findById(@NonNull Long id);
 
     Optional<Customer> findByEmail(String email);
 
