@@ -50,14 +50,6 @@ public class VisitController {
         return PageResponseDto.from(visits.map(mapper::toDto));
     }
 
-    @GetMapping("/{visitId}")
-    public VisitResponseDto getVisit(
-            @PathVariable Long visitId
-    ) {
-        Visit visit = visitService.findById(visitId);
-        return mapper.toDto(visit);
-    }
-
     @GetMapping("/active")
     public PageResponseDto<ActiveVisitResponseDto> getAllActiveVisits(
             @PageableDefault(sort = "checkedInAt", direction = Sort.Direction.ASC)

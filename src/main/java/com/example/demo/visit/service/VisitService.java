@@ -15,11 +15,7 @@ public interface VisitService {
 
     Visit findActiveVisit(Long id);
 
-    ActiveVisitView findActiveCustomerVisit(Customer customer);
-
     Page<ActiveVisitView> findActiveVisitViews(Pageable pageable);
-
-    Page<Visit> getVisitHistory(Customer customer, Pageable pageable);
 
     Visit checkInByAccessCard(AccessCard accessCard, Worker worker, Instant at);
 

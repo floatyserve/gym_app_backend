@@ -55,23 +55,8 @@ public class VisitServiceJpa implements VisitService {
     }
 
     @Override
-    public ActiveVisitView findActiveCustomerVisit(Customer customer) {
-        return visitRepository.findActiveVisitViewForCustomer(customer)
-                .orElseThrow(() -> new ReferenceNotFoundException(
-                        ResourceType.VISIT,
-                        "customer",
-                        "Customer has no active visit"
-                ));
-    }
-
-    @Override
     public Page<ActiveVisitView> findActiveVisitViews(Pageable pageable) {
         return visitRepository.findActiveVisitViews(pageable);
-    }
-
-    @Override
-    public Page<Visit> getVisitHistory(Customer customer, Pageable pageable) {
-        return visitRepository.findAllByCustomer(customer, pageable);
     }
 
     @Override
