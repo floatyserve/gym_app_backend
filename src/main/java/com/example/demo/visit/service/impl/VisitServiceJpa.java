@@ -12,9 +12,11 @@ import com.example.demo.membership.service.MembershipLifecycleService;
 import com.example.demo.membership.service.MembershipUsageService;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.visit.domain.ActiveVisitView;
+import com.example.demo.visit.domain.HistoryVisitView;
 import com.example.demo.visit.domain.Visit;
 import com.example.demo.visit.repository.VisitRepository;
 import com.example.demo.visit.service.VisitService;
+import com.example.demo.visit.service.model.VisitSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -108,15 +110,17 @@ public class VisitServiceJpa implements VisitService {
     }
 
     @Override
-    public Page<Visit> findVisits(Instant from, Instant to, Pageable pageable) {
-        if (from.isAfter(to)) {
-            throw new BadRequestException(
-                    ResourceType.VISIT,
-                    "from",
-                    "FROM date must be before TO date"
-            );
-        }
-
-        return visitRepository.findByCheckedInAtIsBetween(from, to, pageable);
+    public Page<HistoryVisitView> search(VisitSearchCriteria criteria, Pageable pageable) {
+        return visitRepository.search(
+                criteria.customerEmail(),
+                criteria.receptionistEmail(),
+                criteria.active(),
+                criteria.checkedInBefore(),
+                criteria.checkedInAfter(),
+                criteria.checkedOutBefore(),
+                criteria.checkedOutAfter(),
+                criteria.lockerNumber(),
+                pageable
+        );
     }
 }

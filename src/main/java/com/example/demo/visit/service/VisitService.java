@@ -4,7 +4,9 @@ import com.example.demo.card.domain.AccessCard;
 import com.example.demo.customer.domain.Customer;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.visit.domain.ActiveVisitView;
+import com.example.demo.visit.domain.HistoryVisitView;
 import com.example.demo.visit.domain.Visit;
+import com.example.demo.visit.service.model.VisitSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,5 +25,5 @@ public interface VisitService {
 
     void checkOut(Long visitId, Instant at);
 
-    Page<Visit> findVisits(Instant from, Instant to, Pageable pageable);
+    Page<HistoryVisitView> search(VisitSearchCriteria criteria, Pageable pageable);
 }

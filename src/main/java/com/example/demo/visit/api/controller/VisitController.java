@@ -8,16 +8,12 @@ import com.example.demo.customer.service.CustomerService;
 import com.example.demo.security.UserPrincipal;
 import com.example.demo.staff.domain.Worker;
 import com.example.demo.staff.service.WorkerService;
-import com.example.demo.visit.api.dto.ActiveVisitResponseDto;
-import com.example.demo.visit.api.dto.CheckInByEmailRequest;
-import com.example.demo.visit.api.dto.CheckInByAccessCard;
-import com.example.demo.visit.api.dto.VisitResponseDto;
-import com.example.demo.visit.domain.Visit;
+import com.example.demo.visit.api.dto.*;
 import com.example.demo.visit.mapper.VisitMapper;
 import com.example.demo.visit.service.VisitService;
+import com.example.demo.visit.service.model.VisitSearchCriteria;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,7 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
-import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/visits")
@@ -41,13 +36,25 @@ public class VisitController {
     private final CustomerService customerService;
 
     @GetMapping
-    public PageResponseDto<VisitResponseDto> getVisits(
-            @RequestParam Instant from,
-            @RequestParam Instant to,
+    public PageResponseDto<HistoryVisitResponseDto> search(
+            @ModelAttribute VisitSearchRequest request,
             Pageable pageable
     ) {
-        Page<Visit> visits = visitService.findVisits(from, to, pageable);
-        return PageResponseDto.from(visits.map(mapper::toDto));
+        VisitSearchCriteria criteria = new VisitSearchCriteria(
+                request.customerEmail(),
+                request.receptionistEmail(),
+                request.active(),
+                request.checkedInBefore(),
+                request.checkedInAfter(),
+                request.checkedOutBefore(),
+                request.checkedOutAfter(),
+                request.lockerNumber()
+        );
+
+        return PageResponseDto.from(
+                visitService.search(criteria, pageable)
+                        .map(mapper::toHistoryDto)
+        );
     }
 
     @GetMapping("/active")
