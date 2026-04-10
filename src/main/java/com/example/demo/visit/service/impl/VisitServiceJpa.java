@@ -60,7 +60,7 @@ public class VisitServiceJpa implements VisitService {
     }
 
     @Override
-    public Visit checkInByAccessCard(AccessCard accessCard, Worker worker, Instant at) {
+    public void checkInByAccessCard(AccessCard accessCard, Worker worker, Instant at) {
         if (!accessCard.isActive()){
             throw new BadRequestException(
                     ResourceType.ACCESS_CARD,
@@ -71,11 +71,11 @@ public class VisitServiceJpa implements VisitService {
 
         Customer customer = accessCard.getCustomer();
 
-        return checkInByCustomer(customer, worker, at);
+        checkInByCustomer(customer, worker, at);
     }
 
     @Override
-    public Visit checkInByCustomer(Customer customer, Worker worker, Instant at) {
+    public void checkInByCustomer(Customer customer, Worker worker, Instant at) {
         Optional<Membership> activeMembershipOptional = membershipLifecycleService.findValidActiveMembership(customer, at);
 
         Membership membership;
@@ -95,18 +95,16 @@ public class VisitServiceJpa implements VisitService {
 
         lockerAssignmentService.assignAvailableLockerToVisit(visit, at);
 
-        return visit;
     }
 
     @Override
-    public Visit checkOut(Long visitId, Instant at) {
+    public void checkOut(Long visitId, Instant at) {
         Visit visit = findActiveVisit(visitId);
         visit.checkout(at);
 
         LockerAssignment lockerAssignment = lockerAssignmentService.findActiveAssignmentForVisit(visit);
         lockerAssignment.release(at);
 
-        return visit;
     }
 
     @Override

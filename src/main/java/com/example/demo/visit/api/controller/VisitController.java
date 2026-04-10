@@ -62,7 +62,7 @@ public class VisitController {
     }
 
     @PostMapping("/check-in")
-    public VisitResponseDto checkIn(
+    public void checkIn(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody @Valid CheckInByAccessCard request
     ) {
@@ -70,13 +70,11 @@ public class VisitController {
 
         Worker worker = workerService.findByUserId(principal.getId());
 
-        Visit visit = visitService.checkInByAccessCard(accessCard, worker, clock.instant());
-
-        return mapper.toDto(visit);
+        visitService.checkInByAccessCard(accessCard, worker, clock.instant());
     }
 
     @PostMapping("/check-in/by-email")
-    public VisitResponseDto checkInByEmail(
+    public void checkInByEmail(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody @Valid CheckInByEmailRequest request
             ) {
@@ -84,16 +82,13 @@ public class VisitController {
 
         Worker worker = workerService.findByUserId(principal.getId());
 
-        Visit visit = visitService.checkInByCustomer(customer, worker, clock.instant());
-
-        return mapper.toDto(visit);
+        visitService.checkInByCustomer(customer, worker, clock.instant());
     }
 
     @PostMapping("/{visitId}/check-out")
-    public VisitResponseDto checkOut(
+    public void checkOut(
             @PathVariable Long visitId
     ) {
-        Visit visit = visitService.checkOut(visitId, clock.instant());
-        return mapper.toDto(visit);
+        visitService.checkOut(visitId, clock.instant());
     }
 }

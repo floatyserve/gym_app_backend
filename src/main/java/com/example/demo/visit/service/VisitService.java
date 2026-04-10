@@ -17,11 +17,11 @@ public interface VisitService {
 
     Page<ActiveVisitView> findActiveVisitViews(Pageable pageable);
 
-    Visit checkInByAccessCard(AccessCard accessCard, Worker worker, Instant at);
+    void checkInByAccessCard(AccessCard accessCard, Worker worker, Instant at);
 
-    Visit checkInByCustomer(Customer customer, Worker worker, Instant at);
+    void checkInByCustomer(Customer customer, Worker worker, Instant at);
 
-    Visit checkOut(Long visitId, Instant at);
+    void checkOut(Long visitId, Instant at);
 
     Page<Visit> findVisits(Instant from, Instant to, Pageable pageable);
 }
