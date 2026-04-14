@@ -18,20 +18,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleReferenceNotFound(
             ReferenceNotFoundException ex
     ) {
-        Map<String, Object> details = new HashMap<>();
-        if (ex.getResource() != null) {
-            details.put("resource", ex.getResource().name());
-        }
-        if (ex.getField() != null) {
-            details.put("field", ex.getField());
-        }
-
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(
                         "REFERENCE_NOT_FOUND",
                         ex.getMessage(),
-                        details.isEmpty() ? null : details
+                        buildDetails(ex.getResource(), ex.getField())
                 ));
     }
 
@@ -74,23 +66,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleBadRequest(
             BadRequestException ex
     ) {
-        Map<String, Object> details = new HashMap<>();
-        if (ex.getResource() != null) {
-            details.put("resource", ex.getResource().name());
-        }
-        if (ex.getField() != null) {
-            details.put("field", ex.getField());
-        }
-        if (ex.getReason() != null) {
-            details.put("reason", ex.getReason());
-        }
-
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(
                         "BAD_REQUEST",
                         ex.getMessage(),
-                        details.isEmpty() ? null : details
+                        buildDetails(ex.getResource(), ex.getField(), ex.getReason())
                 ));
     }
 
@@ -98,20 +79,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleAlreadyExists(
             AlreadyExistsException ex
     ) {
-        Map<String, Object> details = new HashMap<>();
-        if (ex.getResource() != null) {
-            details.put("resource", ex.getResource().name());
-        }
-        if (ex.getField() != null) {
-            details.put("field", ex.getField());
-        }
-
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(
                         "ALREADY_EXISTS",
                         ex.getMessage(),
-                        details.isEmpty() ? null : details
+                        buildDetails(ex.getResource(), ex.getField())
                 ));
     }
 
@@ -124,5 +97,26 @@ public class GlobalExceptionHandler {
                         "Unexpected server error",
                         null
                 ));
+    }
+
+
+    private Map<String, Object> buildDetails(Enum<?> resource, String field) {
+        return buildDetails(resource, field, null);
+    }
+
+    private Map<String, Object> buildDetails(Enum<?> resource, String field, String reason) {
+        Map<String, Object> details = new HashMap<>();
+
+        if (resource != null) {
+            details.put("resource", resource.name());
+        }
+        if (field != null) {
+            details.put("field", field);
+        }
+        if (reason != null) {
+            details.put("reason", reason);
+        }
+
+        return details.isEmpty() ? null : details;
     }
 }
