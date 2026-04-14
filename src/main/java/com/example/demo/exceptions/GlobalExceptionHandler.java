@@ -18,15 +18,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleReferenceNotFound(
             ReferenceNotFoundException ex
     ) {
+        Map<String, Object> details = new HashMap<>();
+        if (ex.getResource() != null) {
+            details.put("resource", ex.getResource().name());
+        }
+        if (ex.getField() != null) {
+            details.put("field", ex.getField());
+        }
+
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(
                         "REFERENCE_NOT_FOUND",
                         ex.getMessage(),
-                        Map.of(
-                                "resource", ex.getResource().name(),
-                                "field", ex.getField()
-                        )
+                        details.isEmpty() ? null : details
                 ));
     }
 
@@ -34,13 +39,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleBadCredentials(
             BadCredentialsException ex
     ) {
-        String message = ex.getMessage();
-
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiError(
                         "BAD_CREDENTIALS",
-                        message,
+                        ex.getMessage(),
                         null
                 ));
     }
@@ -71,16 +74,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleBadRequest(
             BadRequestException ex
     ) {
+        Map<String, Object> details = new HashMap<>();
+        if (ex.getResource() != null) {
+            details.put("resource", ex.getResource().name());
+        }
+        if (ex.getField() != null) {
+            details.put("field", ex.getField());
+        }
+        if (ex.getReason() != null) {
+            details.put("reason", ex.getReason());
+        }
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(
                         "BAD_REQUEST",
                         ex.getMessage(),
-                        Map.of(
-                                "resource", ex.getResource().name(),
-                                "field", ex.getField(),
-                                "reason", ex.getReason()
-                        )
+                        details.isEmpty() ? null : details
                 ));
     }
 
@@ -88,15 +98,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleAlreadyExists(
             AlreadyExistsException ex
     ) {
+        Map<String, Object> details = new HashMap<>();
+        if (ex.getResource() != null) {
+            details.put("resource", ex.getResource().name());
+        }
+        if (ex.getField() != null) {
+            details.put("field", ex.getField());
+        }
+
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(
                         "ALREADY_EXISTS",
                         ex.getMessage(),
-                        Map.of(
-                                "resource", ex.getResource().name(),
-                                "field", ex.getField()
-                        )
+                        details.isEmpty() ? null : details
                 ));
     }
 
@@ -110,5 +125,4 @@ public class GlobalExceptionHandler {
                         null
                 ));
     }
-
 }
