@@ -4,6 +4,7 @@ import com.example.demo.customer.api.dto.FrontDeskCheckInDto;
 import com.example.demo.customer.domain.Customer;
 import com.example.demo.customer.mapper.FrontDeskMapper;
 import com.example.demo.customer.service.CustomerService;
+import com.example.demo.exceptions.ReferenceNotFoundException;
 import com.example.demo.membership.service.MembershipAvailabilityService;
 import com.example.demo.membership.service.model.MembershipAvailability;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,12 @@ public class FrontDeskCheckInController {
     public FrontDeskCheckInDto scanCard(@PathVariable String cardCode) {
         Customer customer = customerService.findByAccessCardCode(cardCode);
 
-        MembershipAvailability availability = availabilityService.getAvailability(customer);
+        MembershipAvailability availability = null;
+        try {
+            availability = availabilityService.getAvailability(customer);
+        } catch (ReferenceNotFoundException _) {
+           //allow no membership for letting the customer buy one
+        }
 
         return mapper.toCheckInDto(customer, cardCode, availability);
     }
@@ -34,7 +40,10 @@ public class FrontDeskCheckInController {
     public FrontDeskCheckInDto scanEmail(@PathVariable String email) {
         Customer customer = customerService.findByEmail(email);
 
-        MembershipAvailability availability = availabilityService.getAvailability(customer);
+        MembershipAvailability availability = null;
+        try {
+            availability = availabilityService.getAvailability(customer);
+        } catch (ReferenceNotFoundException _) {}
 
         return mapper.toCheckInDto(customer, null, availability);
     }
