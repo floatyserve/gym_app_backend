@@ -120,9 +120,9 @@ public class MembershipLifecycleServiceJpa implements MembershipLifecycleService
     }
 
     @Override
-    public Membership cancelMembership(Membership membership) {
+    public void cancelMembership(Membership membership) {
         membership.cancel();
-        return membershipRepository.save(membership);
+        membershipRepository.save(membership);
     }
 
     private void validateVisitLimit(MembershipType type, Integer visitLimit) {

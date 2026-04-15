@@ -26,4 +26,6 @@ public interface VisitService {
     void checkOut(Long visitId, Instant at);
 
     Page<HistoryVisitView> search(VisitSearchCriteria criteria, Pageable pageable);
+
+    int countUsedVisitsForMembership(Customer customer, Instant startsA, Instant endsAt);
 }

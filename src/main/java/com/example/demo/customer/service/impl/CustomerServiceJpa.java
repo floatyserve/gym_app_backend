@@ -1,6 +1,8 @@
 package com.example.demo.customer.service.impl;
 
 import com.example.demo.auth.domain.User;
+import com.example.demo.card.domain.AccessCard;
+import com.example.demo.card.service.AccessCardService;
 import com.example.demo.common.ResourceType;
 import com.example.demo.customer.api.dto.CustomerResponseDto;
 import com.example.demo.customer.domain.Customer;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerServiceJpa implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final AccessCardService accessCardService;
 
     @Override
     public Customer create(String fullName, String phoneNumber, String email, User createdBy) {
@@ -59,6 +62,23 @@ public class CustomerServiceJpa implements CustomerService {
     public Customer findByEmail(String email) {
         return customerRepository.findByEmail(email)
                 .orElseThrow(() -> new ReferenceNotFoundException(ResourceType.CUSTOMER, "email"));
+    }
+
+    @Override
+    public Customer findByAccessCardCode(String cardCode) {
+        AccessCard accessCard = accessCardService.findByCode(cardCode);
+
+        Customer customer = accessCard.getCustomer();
+
+        if (customer == null) {
+            throw new ReferenceNotFoundException(
+                    ResourceType.CUSTOMER,
+                    "cardCode",
+                    "Access card is not assigned to any customer"
+                    );
+        }
+
+        return customer;
     }
 
     @Override

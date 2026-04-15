@@ -12,5 +12,6 @@ public interface CustomerService {
     Page<CustomerResponseDto> search(CustomerSearchCriteria criteria, Pageable pageable);
     Customer findById(Long id);
     Customer findByEmail(String email);
+    Customer findByAccessCardCode(String cardCode);
     Customer update(Long id, String fullName, String phoneNumber, String email, User updatedBy);
 }

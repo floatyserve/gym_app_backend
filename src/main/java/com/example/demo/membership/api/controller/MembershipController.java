@@ -21,11 +21,6 @@ public class MembershipController {
     private final CustomerService customerService;
     private final MembershipMapper mapper;
 
-    @GetMapping("/{id}")
-    public MembershipResponseDto getMembership(@PathVariable Long id){
-        return mapper.toDto(membershipLifecycleService.findById(id));
-    }
-
     @PostMapping
     public MembershipResponseDto createMembership(@RequestBody @Valid CreateMembershipRequest request){
         Customer customer = customerService.findById(request.customerId());
@@ -41,9 +36,8 @@ public class MembershipController {
     }
 
     @PostMapping("/{id}/cancel")
-    public MembershipResponseDto cancelMembership(@PathVariable Long id){
+    public void cancelMembership(@PathVariable Long id){
         Membership membership = membershipLifecycleService.findById(id);
-
-        return mapper.toDto(membershipLifecycleService.cancelMembership(membership));
+        membershipLifecycleService.cancelMembership(membership);
     }
 }

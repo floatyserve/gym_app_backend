@@ -123,4 +123,9 @@ public class VisitServiceJpa implements VisitService {
                 pageable
         );
     }
+
+    @Override
+    public int countUsedVisitsForMembership(Customer customer, Instant startsAt, Instant endsAt) {
+        return (int)visitRepository.countByCustomerAndCheckedInAtBetween(customer, startsAt, endsAt);
+    }
 }

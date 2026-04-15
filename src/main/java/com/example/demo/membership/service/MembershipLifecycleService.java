@@ -27,5 +27,5 @@ public interface MembershipLifecycleService {
 
     Page<Membership> findCustomerMemberships(Customer customer, Pageable pageable);
 
-    Membership cancelMembership(Membership membership);
+    void cancelMembership(Membership membership);
 }

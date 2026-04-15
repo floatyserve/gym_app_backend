@@ -1,7 +1,5 @@
 package com.example.demo.visit.api.controller;
 
-import com.example.demo.card.domain.AccessCard;
-import com.example.demo.card.service.AccessCardService;
 import com.example.demo.common.api.dto.PageResponseDto;
 import com.example.demo.customer.domain.Customer;
 import com.example.demo.customer.service.CustomerService;
@@ -30,7 +28,6 @@ import java.time.Clock;
 public class VisitController {
     private final VisitService visitService;
     private final VisitMapper mapper;
-    private final AccessCardService accessCardService;
     private final Clock clock;
     private final WorkerService workerService;
     private final CustomerService customerService;
@@ -71,21 +68,9 @@ public class VisitController {
     @PostMapping("/check-in")
     public void checkIn(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody @Valid CheckInByAccessCard request
+            @RequestBody @Valid FrontDeskCheckInRequest request
     ) {
-        AccessCard accessCard = accessCardService.findByCode(request.accessCardCode());
-
-        Worker worker = workerService.findByUserId(principal.getId());
-
-        visitService.checkInByAccessCard(accessCard, worker, clock.instant());
-    }
-
-    @PostMapping("/check-in/by-email")
-    public void checkInByEmail(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody @Valid CheckInByEmailRequest request
-            ) {
-        Customer customer = customerService.findByEmail(request.customerEmail());
+        Customer customer = customerService.findById(request.customerId());
 
         Worker worker = workerService.findByUserId(principal.getId());
 
