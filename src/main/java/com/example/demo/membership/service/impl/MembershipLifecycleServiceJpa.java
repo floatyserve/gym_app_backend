@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ import java.util.Optional;
 public class MembershipLifecycleServiceJpa implements MembershipLifecycleService {
 
     private final MembershipRepository membershipRepository;
-    private final Clock clock;
 
     @Override
     public Membership findById(Long id) {
@@ -90,12 +88,12 @@ public class MembershipLifecycleServiceJpa implements MembershipLifecycleService
     }
 
     @Override
-    public Membership activateNextPendingMembership(Customer customer) {
+    public Membership activateNextPendingMembership(Customer customer, Instant at) {
         if (membershipRepository.existsByCustomerAndStatus(customer, MembershipStatus.ACTIVE)) {
             throw new BadRequestException(
                     ResourceType.MEMBERSHIP,
-                    "customer",
-                    "already has an active membership"
+                    "memberships",
+                    "Customer already has an active membership"
             );
         }
 
@@ -104,12 +102,12 @@ public class MembershipLifecycleServiceJpa implements MembershipLifecycleService
                 .orElseThrow(() ->
                         new BadRequestException(
                                 ResourceType.MEMBERSHIP,
-                                "customer",
-                                "has no pending memberships"
+                                "memberships",
+                                "Customer has no bought memberships"
                         )
                 );
 
-        pending.activate(clock.instant());
+        pending.activate(at);
 
         return pending;
     }
@@ -122,6 +120,12 @@ public class MembershipLifecycleServiceJpa implements MembershipLifecycleService
     @Override
     public void cancelMembership(Membership membership) {
         membership.cancel();
+        membershipRepository.save(membership);
+    }
+
+    @Override
+    public void finishMembership(Membership membership, Instant at) {
+        membership.forceFinish(at);
         membershipRepository.save(membership);
     }
 

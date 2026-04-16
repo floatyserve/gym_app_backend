@@ -23,9 +23,11 @@ public interface MembershipLifecycleService {
             Integer visitLimit
     );
 
-    Membership activateNextPendingMembership(Customer customer);
+    Membership activateNextPendingMembership(Customer customer, Instant at);
 
     Page<Membership> findCustomerMemberships(Customer customer, Pageable pageable);
 
     void cancelMembership(Membership membership);
+
+    void finishMembership(Membership membership, Instant at);
 }

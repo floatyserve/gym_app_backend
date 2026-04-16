@@ -50,15 +50,9 @@ public class Membership {
         return type == MembershipType.LIMITED;
     }
 
-    public boolean isActiveAt(Instant now) {
-        return status == MembershipStatus.ACTIVE
-                && !now.isBefore(startsAt)
-                && !now.isAfter(endsAt);
-    }
-
     public void finishIfExpired(Instant now) {
         if (status == MembershipStatus.ACTIVE && endsAt.isBefore(now)) {
-            finish(now);
+            forceFinish(now);
         }
     }
 
@@ -68,7 +62,7 @@ public class Membership {
         this.status = MembershipStatus.ACTIVE;
     }
 
-    private void finish(Instant now) {
+    public void forceFinish(Instant now) {
         if (status != MembershipStatus.ACTIVE) {
             throw new IllegalStateException("Only active memberships can be finished");
         }
