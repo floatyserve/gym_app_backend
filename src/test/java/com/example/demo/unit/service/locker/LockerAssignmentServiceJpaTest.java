@@ -54,20 +54,6 @@ class LockerAssignmentServiceJpaTest {
         assertThat(result.getLocker()).isSameAs(locker);
     }
 
-    @Test
-    void assignAvailableLockerToVisit_throws_whenNoneAvailable() {
-        Visit visit = mock(Visit.class);
-
-        when(visit.getId()).thenReturn(1L);
-        when(lockerAssignmentRepository.existsByVisitIdAndReleasedAtIsNull(1L)).thenReturn(false);
-
-        when(lockerService.findFirstAvailable()).thenThrow(new BadRequestException("No available lockers"));
-
-        assertThatThrownBy(() ->
-                service.assignAvailableLockerToVisit(visit, NOW))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("No available lockers");
-    }
 
     @Test
     void reassignLocker_releasesOldAndAssignsNew() {

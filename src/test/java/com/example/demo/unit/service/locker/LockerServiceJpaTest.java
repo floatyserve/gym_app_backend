@@ -1,5 +1,6 @@
 package com.example.demo.unit.service.locker;
 
+import com.example.demo.exceptions.AlreadyExistsException;
 import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.exceptions.ReferenceNotFoundException;
 import com.example.demo.locker.domain.Locker;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -46,7 +48,7 @@ class LockerServiceJpaTest {
 
         assertThatThrownBy(() -> lockerService.findById(1L))
                 .isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessageContaining("Locker not found with id");
+                .hasMessageContaining("Locker not found for field id");
     }
 
     @Test
@@ -66,8 +68,8 @@ class LockerServiceJpaTest {
         when(lockerRepository.existsByNumber(10)).thenReturn(true);
 
         assertThatThrownBy(() -> lockerService.create(10))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("Locker already exists with number");
+                .isInstanceOf(AlreadyExistsException.class)
+                .hasMessageContaining("Locker already exists for field number");
     }
 
     @Test
@@ -88,7 +90,7 @@ class LockerServiceJpaTest {
 
         assertThatThrownBy(() -> lockerService.assertAvailable(locker))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("Locker is out of order");
+                .hasMessageContaining("Locker is not available");
     }
 
     @Test
@@ -108,7 +110,12 @@ class LockerServiceJpaTest {
     void outOfOrder_marksLockerOutOfOrder() {
         Locker locker = new Locker(1, LockerStatus.AVAILABLE);
 
-        when(lockerAssignmentRepository.existsByLockerIdAndReleasedAtIsNull(locker.getId()))
+        ReflectionTestUtils.setField(locker, "id", 1L);
+
+        when(lockerRepository.findById(1L))
+                .thenReturn(Optional.of(locker));
+
+        when(lockerAssignmentRepository.existsByLockerIdAndReleasedAtIsNull(1L))
                 .thenReturn(false);
 
         Locker result = lockerService.outOfOrder(locker);

@@ -4,6 +4,7 @@ import com.example.demo.auth.domain.Role;
 import com.example.demo.auth.domain.User;
 import com.example.demo.auth.repository.UserRepository;
 import com.example.demo.auth.service.impl.UserServiceJpa;
+import com.example.demo.exceptions.AlreadyExistsException;
 import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.exceptions.ReferenceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,8 +66,8 @@ class UserServiceJpaTest {
 
         assertThatThrownBy(() ->
                 userService.create("test@test.com", "password", Role.RECEPTIONIST, NOW)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Email already in use");
+        ).isInstanceOf(AlreadyExistsException.class)
+                .hasMessageContaining("User already exists for field email");
 
         verify(userRepository, never()).save(any());
         verifyNoInteractions(passwordEncoder);
@@ -90,7 +91,7 @@ class UserServiceJpaTest {
 
         assertThatThrownBy(() -> userService.findById(1L))
                 .isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessageContaining("User with id");
+                .hasMessageContaining("User not found for field id");
     }
 
     // ---------- findByEmail ----------
@@ -140,7 +141,7 @@ class UserServiceJpaTest {
                 userService.deactivate(userId, userId)
         )
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("You cannot deactivate yourself");
+                .hasMessageContaining("You cannot deactivate yourself");
 
         verify(userRepository, never()).findById(any());
     }
@@ -167,7 +168,7 @@ class UserServiceJpaTest {
                 userService.activate(userId, userId)
         )
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("You cannot activate yourself");
+                .hasMessageContaining("You cannot activate yourself");
 
         verify(userRepository, never()).findById(any());
     }

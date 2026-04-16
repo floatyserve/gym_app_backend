@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +30,6 @@ class MembershipLifecycleServiceJpaTest {
 
     @Mock
     private MembershipRepository membershipRepository;
-
-    @Mock
-    private Clock clock;
 
     @InjectMocks
     private MembershipLifecycleServiceJpa service;
@@ -132,15 +128,13 @@ class MembershipLifecycleServiceJpaTest {
 
     @Test
     void activateNextPendingMembership_success() {
-        when(clock.instant()).thenReturn(NOW);
-
         Membership pending = new Membership(customer, MembershipType.UNLIMITED, MembershipDuration.MONTH, null);
 
         when(membershipRepository.existsByCustomerAndStatus(customer, MembershipStatus.ACTIVE)).thenReturn(false);
         when(membershipRepository.findTopByCustomerAndStatusOrderByIdAsc(customer, MembershipStatus.PENDING))
                 .thenReturn(Optional.of(pending));
 
-        Membership activated = service.activateNextPendingMembership(customer);
+        Membership activated = service.activateNextPendingMembership(customer, NOW);
 
         assertEquals(MembershipStatus.ACTIVE, activated.getStatus());
         assertEquals(NOW, activated.getStartsAt());
@@ -152,7 +146,7 @@ class MembershipLifecycleServiceJpaTest {
         when(membershipRepository.existsByCustomerAndStatus(customer, MembershipStatus.ACTIVE)).thenReturn(true);
 
         assertThrows(BadRequestException.class,
-                () -> service.activateNextPendingMembership(customer));
+                () -> service.activateNextPendingMembership(customer, NOW));
     }
 
     @Test
@@ -162,7 +156,7 @@ class MembershipLifecycleServiceJpaTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(BadRequestException.class,
-                () -> service.activateNextPendingMembership(customer));
+                () -> service.activateNextPendingMembership(customer, NOW));
     }
 
     @Test

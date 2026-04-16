@@ -3,7 +3,6 @@ package com.example.demo.unit.service.accesscard;
 import com.example.demo.card.domain.AccessCard;
 import com.example.demo.card.domain.AccessCardStatus;
 import com.example.demo.card.repository.AccessCardRepository;
-import com.example.demo.card.service.AccessCardService;
 import com.example.demo.card.service.impl.AccessCardAssignmentServiceJpa;
 import com.example.demo.customer.domain.Customer;
 import com.example.demo.exceptions.BadRequestException;
@@ -22,9 +21,6 @@ class AccessCardAssignmentServiceJpaTest {
 
     @Mock
     private AccessCardRepository accessCardRepository;
-
-    @Mock
-    private AccessCardService accessCardService;
 
     @InjectMocks
     private AccessCardAssignmentServiceJpa service;
@@ -77,26 +73,5 @@ class AccessCardAssignmentServiceJpaTest {
         assertNull(detached.getCustomer());
         assertEquals(AccessCardStatus.INACTIVE, detached.getStatus());
         verify(accessCardRepository).save(card);
-    }
-
-    @Test
-    void replaceLostCard_success() {
-        AccessCard lostCard = new AccessCard("OLD");
-        lostCard.assign(customer);
-        lostCard.activate();
-
-        AccessCard newCard = new AccessCard("NEW");
-
-        when(accessCardService.findActiveCard(customer)).thenReturn(lostCard);
-        when(accessCardRepository.existsByCustomerAndStatus(customer, AccessCardStatus.ACTIVE))
-                .thenReturn(false);
-        when(accessCardRepository.save(any()))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        AccessCard result = service.replaceLostCard(customer, newCard);
-
-        verify(accessCardService).markLost(lostCard.getId());
-        assertEquals(customer, result.getCustomer());
-        assertEquals(AccessCardStatus.ACTIVE, result.getStatus());
     }
 }

@@ -1,6 +1,5 @@
 package com.example.demo.unit.service.visit;
 
-import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.exceptions.ReferenceNotFoundException;
 import com.example.demo.visit.domain.Visit;
 import com.example.demo.visit.repository.VisitRepository;
@@ -42,7 +41,7 @@ class VisitServiceJpaTest {
 
         assertThatThrownBy(() -> visitService.findById(1L))
                 .isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessageContaining("Visit not found with id");
+                .hasMessageContaining("Visit not found for field id");
     }
 
     @Test
@@ -63,7 +62,7 @@ class VisitServiceJpaTest {
         when(visitRepository.findById(1L)).thenReturn(Optional.of(visit));
 
         assertThatThrownBy(() -> visitService.findActiveVisit(1L))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("Visit is already checked out");
+                .isInstanceOf(ReferenceNotFoundException.class)
+                .hasMessageContaining("Requested visit is already checked out");
     }
 }

@@ -85,7 +85,7 @@ class CustomerServiceJpaTest {
 
         assertThatThrownBy(() -> customerService.findById(1L))
                 .isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessage("Customer not found with id: 1");
+                .hasMessageContaining("Customer not found for field id");
     }
 
     // ---------- findByEmail ----------
@@ -107,7 +107,7 @@ class CustomerServiceJpaTest {
 
         assertThatThrownBy(() -> customerService.findByEmail("john@test.com"))
                 .isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessage("Customer not found with email: john@test.com");
+                .hasMessage("Customer not found for field email");
     }
 
     // ---------- update ----------
@@ -147,6 +147,6 @@ class CustomerServiceJpaTest {
                         user
                 )
         ).isInstanceOf(ReferenceNotFoundException.class)
-                .hasMessage("Customer not found with id: 1");
+                .hasMessage("Customer not found for field id");
     }
 }

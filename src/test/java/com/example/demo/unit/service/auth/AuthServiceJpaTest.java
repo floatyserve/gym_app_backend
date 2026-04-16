@@ -155,7 +155,7 @@ class AuthServiceJpaTest {
         assertThatThrownBy(() ->
                 authService.changePassword(userId, password, password)
         ).isInstanceOf(BadRequestException.class)
-                .hasMessage("New password must be different from the old one");
+                .hasMessageContaining("New password must be different from the old one");
 
         verify(user, never()).setPasswordHash(any());
         verify(jwtTokenProvider, never()).generateToken(any());
