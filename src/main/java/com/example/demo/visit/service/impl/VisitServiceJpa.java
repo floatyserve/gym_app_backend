@@ -78,25 +78,44 @@ public class VisitServiceJpa implements VisitService {
 
     @Override
     public void checkInByCustomer(Customer customer, Worker worker, Instant at) {
-        Optional<Membership> activeMembershipOptional = membershipLifecycleService.findValidActiveMembership(customer, at);
+        if (isCustomerCheckedIn(customer)) {
+            throw new BadRequestException(
+                    ResourceType.VISIT, "customer", "Customer is already checked in"
+            );
+        }
 
-        Membership membership;
+        resolveMembershipForCheckIn(customer, at);
 
-        membership = activeMembershipOptional
-                .orElseGet(() -> membershipLifecycleService.activateNextPendingMembership(customer));
+        Visit visit = visitRepository.save(new Visit(customer, worker, at));
+        lockerAssignmentService.assignAvailableLockerToVisit(visit, at);
+    }
 
-        if (membershipUsageService.isExhausted(membership, at)) {
+    private void resolveMembershipForCheckIn(Customer customer, Instant at) {
+        Optional<Membership> activeOptional = membershipLifecycleService.findValidActiveMembership(customer, at);
+
+        if (activeOptional.isPresent()) {
+            Membership activeMembership = activeOptional.get();
+
+            if (!membershipUsageService.isExhausted(activeMembership, at)) {
+                return;
+            }
+
+            membershipLifecycleService.finishMembership(activeMembership, at);
+        }
+
+        Membership newMembership = membershipLifecycleService.activateNextPendingMembership(customer, at);
+
+        if (membershipUsageService.isExhausted(newMembership, at)) {
             throw new BadRequestException(
                     ResourceType.MEMBERSHIP,
                     "visitLimit",
                     "Visit limit reached"
             );
         }
+    }
 
-        Visit visit = visitRepository.save(new Visit(customer, worker, at));
-
-        lockerAssignmentService.assignAvailableLockerToVisit(visit, at);
-
+    private boolean isCustomerCheckedIn(Customer customer) {
+        return visitRepository.existsByCustomerAndCheckedOutAtIsNull(customer);
     }
 
     @Override

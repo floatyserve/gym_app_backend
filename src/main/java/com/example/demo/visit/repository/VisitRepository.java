@@ -16,21 +16,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     long countByCustomerAndCheckedInAtBetween(Customer customer, Instant startsAt, Instant endsAt);
 
     @Query("""
-        SELECT
-      v.id AS visitId,
-      c.fullName AS customerFullName,
-      v.checkedInAt AS checkedInAt,
-      l.id AS lockerId,
-      l.number AS lockerNumber
-    FROM Visit v
-    JOIN v.customer c
-    LEFT JOIN LockerAssignment la ON la.visit = v AND la.releasedAt IS NULL
-    LEFT JOIN la.locker l
-    WHERE v.active = true AND c =:customer
-""")
-    Optional<ActiveVisitView> findActiveVisitViewForCustomer(Customer customer);
-
-    @Query("""
     SELECT
       v.id AS visitId,
       c.fullName AS customerFullName,
@@ -84,4 +69,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             Integer lockerNumber,
             Pageable pageable
     );
+
+    boolean existsByCustomerAndCheckedOutAtIsNull(Customer customer);
 }
