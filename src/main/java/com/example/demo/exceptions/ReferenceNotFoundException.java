@@ -9,7 +9,7 @@ public class ReferenceNotFoundException extends RuntimeException {
     private final String field;
 
     public ReferenceNotFoundException(ResourceType resource, String field) {
-        super(resource + " not found for field " + field);
+        super(resource.code() + " not found for field " + field);
         this.resource = resource;
         this.field = field;
     }

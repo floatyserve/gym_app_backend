@@ -10,7 +10,7 @@ public class BadRequestException extends RuntimeException{
     private final String reason;
 
     public BadRequestException(ResourceType resource, String field, String reason) {
-        super("Bad request for " + resource + " with field " + field + ": " + reason);
+        super("Bad request for " + resource.code() + " with field " + field + ": " + reason);
         this.resource = resource;
         this.field = field;
         this.reason = reason;
