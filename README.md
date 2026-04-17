@@ -21,6 +21,24 @@ Built with a strong focus on clean architecture, transactional consistency, secu
 
 ---
 
+## Project Goals
+
+This project was built to demonstrate practical backend engineering skills through a realistic business system.
+
+Core goals included:
+
+- Designing a production-style REST API with clean layered architecture.
+- Implementing real-world business workflows beyond basic CRUD operations.
+- Building secure authentication and authorization using JWT and Spring Security.
+- Ensuring transactional consistency for time-sensitive operations such as check-ins and membership activation.
+- Creating scalable search, filtering, and pagination endpoints for administrative use cases.
+- Applying strong validation and fail-fast error handling to protect data integrity.
+- Designing maintainable relational data models with PostgreSQL and JPA.
+- Writing clean, extensible backend code following professional development practices.
+- Providing frontend-ready APIs for integration with a React client application.
+- Demonstrating deployment readiness through Docker-based local setup.
+
+---
 ## Key Features
 
 ### Membership Lifecycle Management
