@@ -151,12 +151,17 @@ Structured using a layered backend architecture:
    ```
    
 ### Alternative setup (Docker)
-1. Run docker compose
+1. Clone the repository
+    ```bash
+    git clone <repository-url>
+    cd <project-folder>
     ```
+2. Run docker compose
+    ```bash
    docker-compose up --build
    ```
-2. To clean up, including the database, run
-    ```
+3. To clean up, including the database, run
+    ```bash
    docker-compose down -v
    ```
    
